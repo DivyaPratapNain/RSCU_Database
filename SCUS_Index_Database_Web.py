@@ -117,4 +117,4 @@ def download_file():
         return jsonify({"error": "No data or filename provided"}), 400
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False,host='0.0.0.0')
