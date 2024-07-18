@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- For drop-down animation -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- Font Awesome for refresh icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- To import style.css into the HTML file -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+
+    <title>DOST</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">SCUS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/">Scaled Codon Usage Similarity Index Database</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2 class="heading_1">RSCU Values</h2>
+        <div class="content-box mx-auto my-5 p-3">
+            <!-- Container for refresh button, download button, and dropdown -->
+            <div class="d-flex align-items-center mb-3">
+                <!-- Refresh button -->
+                <button class="btn btn-secondary me-3" id="refreshButton">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+
+                <!-- Download button -->
+                <button class="btn btn-primary me-3" id="downloadButton">Download</button>
+
+                <!-- Dropdown for species selection -->
+                <div class="dropdown me-3">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="speciesDropdown" aria-expanded="false">
+                        Select Species
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="speciesDropdown">
+                        {% for species in species %}
+                            <li>
+                                <div class="form-check">
+                                    <label class="form-check-label" for="species{{ loop.index }}">
+                                        {{ species }}
+                                    </label>
+                                    <input class="form-check-input" type="checkbox" value="{{ species }}" id="species{{ loop.index }}">
+                                </div>
+                            </li>
+                        {% endfor %}
+                        <div class="dropdown-apply-button">
+                            <button class="btn btn-primary" id="applySpeciesFilter">Apply</button>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Selected Species Heading -->
+            <div id="selectedSpecies" class="mb-3"></div>
+
+            <div class="table-responsive" id="initialTableContainer">
+                <table class="table table-bordered table-centered">
+                    <tbody id="initial-table-body">
+                        {{ table_data|safe }}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-responsive d-none" id="codonTableContainer" style="max-height: 800px; overflow-y: auto;">
+                <table class="table table-bordered table-centered">
+                    <thead>
+                        <tr>
+                            <th>Codon</th>
+                            <th>Average RSCU</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Table data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const speciesDropdownButton = document.getElementById('speciesDropdown');
+            const speciesDropdownMenu = document.querySelector('.dropdown-menu');
+            const selectedSpeciesDiv = document.getElementById('selectedSpecies');
+            const initialTableContainer = document.getElementById('initialTableContainer');
+            const codonTableContainer = document.getElementById('codonTableContainer');
+
+            document.getElementById('applySpeciesFilter').addEventListener('click', function() {
+                const checkboxes = document.querySelectorAll('.form-check-input');
+                const selectedSpecies = Array.from(checkboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.value);
+
+                if (selectedSpecies.length > 0) {
+                    fetch('/filter', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ filters: { species: selectedSpecies } })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('table-body').innerHTML = data.data;
+                        selectedSpeciesDiv.innerHTML = '<strong>Selected Species:</strong> ' + selectedSpecies.join(', ');
+
+                        initialTableContainer.classList.add('d-none');
+                        codonTableContainer.classList.remove('d-none');
+                        codonTableContainer.classList.add('d-block');
+
+                        speciesDropdownMenu.classList.remove('show');
+                        speciesDropdownButton.setAttribute('aria-expanded', 'false');
+                    });
+                } else {
+                    alert('Please select at least one species.');
+                }
+            });
+
+            speciesDropdownButton.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const isExpanded = speciesDropdownButton.getAttribute('aria-expanded') === 'true';
+                speciesDropdownButton.setAttribute('aria-expanded', !isExpanded);
+                speciesDropdownMenu.classList.toggle('show', !isExpanded);
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!speciesDropdownButton.contains(event.target) && !speciesDropdownMenu.contains(event.target)) {
+                    speciesDropdownMenu.classList.remove('show');
+                    speciesDropdownButton.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            document.getElementById('downloadButton').addEventListener('click', function() {
+                const tableData = document.querySelector('#codonTableContainer').classList.contains('d-none') ? 
+                                  `<table>${document.querySelector('#initial-table-body').innerHTML}</table>` :
+                                  `<table>${document.querySelector('#table-body').innerHTML}</table>`;
+
+                const filename = document.querySelector('#codonTableContainer').classList.contains('d-none') ? 
+                                 'RSCU_Database.xlsx' : 
+                                 'Average_RSCU.xlsx';
+
+                fetch('/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ data: tableData, filename: filename })
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(err => console.error('Download error:', err));
+            });
+
+            // Refresh button event listener
+            document.getElementById('refreshButton').addEventListener('click', function() {
+                location.reload();
+            });
+        });
+    </script>
+</body>
+</html>

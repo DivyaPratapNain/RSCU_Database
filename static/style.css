@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Sen:wght@600&display=swap');
+
+/* Apply the Sen font to the body, or specific elements as needed */
+.container-fluid {
+    font-family: 'Sen', sans-serif;
+    font-weight: 600;
+    color: black !important; /* Ensures the text is black */
+}
+
+/* Make the "Home" and "Web Tools" links bold */
+.nav-link.active, .nav-link.bold-link {
+    font-weight: bold;
+    color: black !important; /* Ensures the text is black */
+}
+
+.dropdown-toggle {
+    font-weight: bold;
+    color: black;
+    transition: all 0.3s;
+}
+
+.dropdown-toggle:hover {
+    transform: translateY(-7.5px);
+    background-color: rgb(231, 231, 235);
+    border: rgb(231, 231, 235);
+    color: black;
+}
+
+.nav-item {
+    font-weight: bold;
+    color: black;
+    transition: all 0.3s;
+}
+
+.nav-item:hover {
+    transform: translateY(-7.5px);
+    background-color: rgb(231, 231, 235);
+    border: rgb(231, 231, 235);
+    color: black;
+}
+
+/* New style for the navbar brand to make SCUS bold */
+.navbar-brand {
+    font-family: 'Sen', sans-serif;
+    font-weight: bold;
+    color: black !important;
+}
+
+/* Style for the content box */
+.content-box {
+    font-family: 'Sen', sans-serif;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.table-centered th {
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.table thead th {
+    text-align: center;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 1;
+    text-align: center;  /* Ensure this line is present */
+}
+
+.fixed-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 100;
+}
+
+.heading_1 {
+    font-family: 'Sen', sans-serif;
+    font-weight: 600;
+    color: black !important; /* Ensures the text is black */
+}
+
+/* Custom style for the dropdown button */
+.btn-secondary {
+    background-color: #f8f9fa; /* Light gray background */
+    color: #000; /* Black text */
+    border-color: #ced4da; /* Light gray border */
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active {
+    background-color: #e2e6ea; /* Slightly darker gray for hover/active state */
+    color: #000; /* Black text */
+    border-color: #adb5bd; /* Slightly darker gray border */
+}
+
+.dropdown-menu {
+    display: none; /* Ensure the menu is not displayed by default */
+    max-height: 300px;
+    overflow-y: auto;
+    width: 400px; /* Increase width as needed */
+    flex-direction: column;
+}
+
+.dropdown-menu.show {
+    display: block; /* Only display when the 'show' class is added */
+}
+
+
+.form-check {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 10px; /* Ensure space between checkbox and text */
+}
+
+.form-check-label {
+    margin-left: 10px;
+}
+
+.dropdown-apply-button {
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    text-align: center;
+    padding: 10px 0;
+    border-top: 1px solid #e2e6ea;
+}
+
+/* Hide the table initially */
+.d-none {
+    display: none;
+}
+
+.d-block {
+    display: block;
+}
+
+.table-responsive {
+    max-height: 800px;
+    overflow-y: auto;
+}
